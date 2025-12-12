@@ -29,9 +29,9 @@ class App:
 
         self.control_frame_n =control_frame_n                                   # 自定义UI模块个数
 
-        self.control_frame_config = control_frame_config                        # 自定义UI模块参数
+        self.control_frame_config = control_frame_config                        # 自定义UI模块参数                                           
 
-        self.control_frame_list = []                                            # 自定义模块框架列表
+        self.root.control_frame_list = []                                       # 自定义模块框架列表
 
         # 操作记录区
         self.text_area = ScrolledText(self.root)
@@ -42,12 +42,12 @@ class App:
         for n in range(control_frame_n):
 
             if self.control_frame_config[n]['name'] in ['create_select_sqlite_database']:
-                self.control_frame_list.append(create_select_database_sqlite_modular_class.
+                self.root.control_frame_list.append(create_select_database_sqlite_modular_class.
                                                 create_select_database_sqlite_frame(root=self.root,
                                                                                     control_frame_config=self.control_frame_config[n],
                                                                                     text_area=self.text_area))
             elif self.control_frame_config[n]['name'] in ['data_import_clean_file']:
-                self.control_frame_list.append(data_import_clean_file_modular_class.
+                self.root.control_frame_list.append(data_import_clean_file_modular_class.
                                                data_import_clean_file_frame(root=self.root,
                                                                             control_frame_config=self.control_frame_config[n],
                                                                             text_area=self.text_area))

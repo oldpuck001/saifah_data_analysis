@@ -809,4 +809,16 @@
             result_text += openxl_xlsx_tool_class_example.in_out_result_fill_layering_xlsx(file_path, '数值分层对比_out_只在 table 2 中出现的数值', fill_df)
 
         return result_text
+
+
+
+    def convert_none(self, value):
+        if str(value).strip().lower() == 'none':
+            return None
+        else:
+            try:
+                return int(value)
+            except:
+                return value 
+            
 '''

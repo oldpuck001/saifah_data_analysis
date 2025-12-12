@@ -11,7 +11,7 @@ class create_select_database_sqlite_modular:
 
     def create_select_database_sqlite_frame(self, root, control_frame_config, text_area):
         frame_result = tk.Frame(root)
-        frame_result.pack(side=tk.TOP, fill=tk.BOTH)
+        frame_result.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=(10, 5))
 
         tk.Label(frame_result, text=control_frame_config['button_name'], width=15, anchor='w').pack(side=tk.LEFT, padx=5, pady=5)
         entry_widget = tk.Entry(frame_result, state='readonly', readonlybackground='white')         # 创建Entry并保存引用

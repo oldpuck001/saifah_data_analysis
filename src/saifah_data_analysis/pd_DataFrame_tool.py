@@ -5,6 +5,7 @@ import pandas as pd
 
 class pd_DataFrame_tool_class:
 
+    # 获取工作表名称列表
     def sheetnames_import(self, original_file_path=None):
         try:
             sheet_file = pd.ExcelFile(original_file_path)
@@ -13,9 +14,10 @@ class pd_DataFrame_tool_class:
             return [True, info, sheetnames]
         except:
             sheetnames = []
-            info = 'Failed to read worksheet list!\n'
+            info = 'Failed to read worksheet list!\nThis feature is only supported for xlsx and xls format files.\n'
             return [False, info, sheetnames]
 
+    # 读取数据文件
     def read_xlsx_xls_csv_txt_fun(self, original_file_path = None,
                                         sheet_name = 0,                     # 默认读取第一个工作表 (索引0)
                                         skiprows = None,                    # 默认不跳过任何行
@@ -92,14 +94,14 @@ class pd_DataFrame_tool_class:
                 return [False, info, df]
 
         except Exception as e:
-            print("ERROR >>> ", e)
-            info = 'Data file reading failed.\nPlease try importing again.\n'
+            info = f'Data file reading failed.\nPlease try importing again.\n{e}\n'
             df = pd.DataFrame()
             return [False, info, df]
 
         info = 'Data file read successfully!\n'
         return [True, info, df]
 
+    # 导出xlsx文件
     def df_export_xlsx(self, df, path):
 
         try:
@@ -111,6 +113,7 @@ class pd_DataFrame_tool_class:
             info = 'Export failed!\n'
             return [False, info]
 
+    # 数据清洗
     def df_cleaning(self, df, clean_col, clean_option):
 
         info = f'DataFrame column: {clean_col}\n数据清洗选项：{clean_option}\n'
@@ -145,8 +148,9 @@ class pd_DataFrame_tool_class:
             elif clean_option == '将数据类型转换为时间日期类型':
                 df[clean_col] = pd.to_datetime(df[clean_col], errors='coerce')                      # 将数据类型转换为时间日期类型
 
+
             info += 'Data cleaning successful!\n'
-            return [True, info, df]
+            return [True, info]
         
         except:
 
