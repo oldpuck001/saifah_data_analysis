@@ -19,6 +19,7 @@ class data_import_clean_file_modular:
     data_df = pd.DataFrame()
 
     def data_import_clean_file_frame(self, root, control_frame_config, text_area):
+        
         frame_result = tk.Frame(root)
         frame_result.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=5, pady=5)
 
@@ -429,8 +430,6 @@ class data_import_clean_file_modular:
         path = filedialog.asksaveasfilename(defaultextension='.xlsx', filetypes=[('Excel Files', '*.xlsx')])
 
         if path:
-            
             result_info = pd_DataFrame_tool_example.df_export_xlsx(self.data_df, path)
-
-        fill_text = result_info[1]
-        fill_area_text.text_area_fill(text_area, fill_text)
+            fill_text = result_info[1]
+            fill_area_text.text_area_fill(text_area, fill_text)

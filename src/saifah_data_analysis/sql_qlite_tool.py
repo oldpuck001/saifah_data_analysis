@@ -40,46 +40,46 @@ class sql_sqlite_tool_class:
             self.close_connection()
 
 
-    # # 获取所有表名
-    # def get_all_tables(self, database_file_path):
-    #     try:
-    #         self.conn = sqlite3.connect(database_file_path)
-    #         cursor = self.conn.cursor()
-    #         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    #         tables = cursor.fetchall()
-    #         return [True, [table[0] for table in tables]]
-    #     except Error as e:
-    #         return [False, e]
-    #     finally:
-    #         self.close_connection()
+    # 获取所有表名
+    def get_all_tables(self, database_file_path):
+        try:
+            self.conn = sqlite3.connect(database_file_path)
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = cursor.fetchall()
+            return [True, [table[0] for table in tables]]
+        except Error as e:
+            return [False, e]
+        finally:
+            self.close_connection()
 
 
-    # # 获取所有列名
-    # def get_table_columns(self, database_file_path, table_name):
-    #     try:
-    #         self.conn = sqlite3.connect(database_file_path)
-    #         cursor = self.conn.cursor()
-    #         cursor.execute(f"PRAGMA table_info({table_name})")
-    #         columns = cursor.fetchall()
-    #         return [True, [column[1] for column in columns]]                # 提取列名（PRAGMA返回的第二个元素是列名）
-    #     except Error as e:
-    #         return [False, e]
-    #     except Exception as e:
-    #         return [False, e]
-    #     finally:
-    #         self.close_connection()
+    # 获取所有列名
+    def get_table_columns(self, database_file_path, table_name):
+        try:
+            self.conn = sqlite3.connect(database_file_path)
+            cursor = self.conn.cursor()
+            cursor.execute(f"PRAGMA table_info({table_name})")
+            columns = cursor.fetchall()
+            return [True, [column[1] for column in columns]]                # 提取列名（PRAGMA返回的第二个元素是列名）
+        except Error as e:
+            return [False, e]
+        except Exception as e:
+            return [False, e]
+        finally:
+            self.close_connection()
 
 
-    # # 执行SQL查询并返回结果DataFrame
-    # def execute_query(self, database_file_path, query):
-    #     try:
-    #         self.conn = sqlite3.connect(database_file_path)         # 建立数据库连接
-    #         result_df = pd.read_sql(query, self.conn)               # 从数据库读取数据
-    #         return [True, result_df]
-    #     except Error as e:
-    #         return [False, e]
-    #     finally:
-    #         self.close_connection()
+    # 执行SQL查询并返回结果DataFrame
+    def execute_query(self, database_file_path, query):
+        try:
+            self.conn = sqlite3.connect(database_file_path)         # 建立数据库连接
+            result_df = pd.read_sql(query, self.conn)               # 从数据库读取数据
+            return [True, result_df]
+        except Error as e:
+            return [False, e]
+        finally:
+            self.close_connection()
 
 
     # # 导出.xlsx文件
