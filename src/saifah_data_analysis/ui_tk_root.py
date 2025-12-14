@@ -1,5 +1,6 @@
 # ui_tk_root.py
 
+import sys
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from .ui_tk_modular import create_select_database_sqlite
@@ -25,8 +26,9 @@ class App:
         self.root.maxsize(maxsize_x, maxsize_y)                         # 设置窗口的最大大小
 
         self.root.resizable(resizable_x, resizable_y)                   # 设置窗口是否可以调整大小
-        
-        self.root.after(200, self.bring_to_front)                       # macOS workaround: mainloop開始後再將視窗浮前
+
+        if sys.platform == 'darwin':
+            self.root.after(200, self.bring_to_front)                   # macOS workaround: mainloop開始後再將視窗浮前
 
         self.control_frame_n =control_frame_n                           # 自定义UI模块个数
 

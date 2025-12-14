@@ -1,4 +1,31 @@
 
+import pandas as pd
+
+columns = ['name', 'No.', 'country', 'score', 'job']
+
+index=[101, 100, 102, 103, 104, 105, 106, 107, 108, 109]
+
+data = [['Mike', 1, 'Thailand', 80, 'teacher'],
+        ['Yang', 2, 'China', 77, 'student'],
+        ['Tom', 3, 'England', 85, 'student'],
+        ['Losa', 4, 'Japan', 90, 'accounting'],
+        ['Tim', 6, 'America', 87, 'student'],
+        ['Zhang', 5, 'China', 73, 'student'],
+        ['Jack', 9, 'India', 85, 'student'],
+        ['Wang', 8, 'China', 89, 'student'],
+        ['Chang', 10, 'Thailand', 94, 'accounting'],
+        ['Lucy', 7, 'Japan', 91, 'employee']
+        ]
+
+df = pd.DataFrame(data, columns=columns, index=index)
+print(df)
+
+# groupby方法
+print('groupby方法分組數據')
+
+# groupby方法分組數據，使用一個列的值分組數據
+print(df.groupby('job')['score'].sum())
+print(df.groupby(['job']).sum())
 
 '''
     # 选择文件/文件夹

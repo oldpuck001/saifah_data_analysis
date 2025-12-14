@@ -2,6 +2,9 @@
 
 import os
 import pandas as pd
+from .openxl_xlsx_tool import openxl_xlsx_tool_class
+
+openxl_xlsx_tool_class_example = openxl_xlsx_tool_class()
 
 class pd_DataFrame_tool_class:
 
@@ -156,3 +159,370 @@ class pd_DataFrame_tool_class:
 
             info += 'Data cleaning failed!\n'
             return [False, info]
+
+
+    # input output value check 对比模式一：总量、总额对比
+    def input_output_value_check_sum(self, table_1_name, table_1_in_out_mode, sql_table_1_df, table_1_in_col, table_1_out_col, table_1_in_out_value,
+                                     table_1_in_out_col, table_1_in_label, table_1_out_label, table_2_name, table_2_in_out_mode, sql_table_2_df,
+                                     table_2_in_col, table_2_out_col, table_2_in_out_value, table_2_in_out_col, table_2_in_label, table_2_out_label,
+                                     file_path):
+
+        fill_text = ''
+
+        if table_1_in_out_mode == '双列模式':
+            quantity_in_table_1_df = sql_table_1_df[table_1_in_col].dropna().shape[0]
+            quantity_out_table_1_df = sql_table_1_df[table_1_out_col].dropna().shape[0]
+            amount_in_table_1_df = round(sql_table_1_df[table_1_in_col].sum(), 2)
+            amount_out_table_1_df = round(sql_table_1_df[table_1_out_col].sum(), 2)
+        elif table_1_in_out_mode == '+/-单列模式':
+            quantity_in_table_1_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value] > 0][table_1_in_out_value].dropna().shape[0]
+            quantity_out_table_1_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value] < 0][table_1_in_out_value].dropna().shape[0]
+            amount_in_table_1_df = round(sql_table_1_df[sql_table_1_df[table_1_in_out_value] > 0][table_1_in_out_value].sum(), 2)
+            amount_out_table_1_df = round(-sql_table_1_df[sql_table_1_df[table_1_in_out_value] < 0][table_1_in_out_value].sum(), 2)
+        elif table_1_in_out_mode == '标识列单列模式':
+            quantity_in_table_1_df = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_in_label][table_1_in_out_value].dropna().shape[0]
+            quantity_out_table_1_df = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_out_label][table_1_in_out_value].dropna().shape[0]
+            amount_in_table_1_df = round(sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_in_label][table_1_in_out_value].sum(), 2)
+            amount_out_table_1_df = round(sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_out_label][table_1_in_out_value].sum(), 2)
+
+        if table_2_in_out_mode == '双列模式':
+            quantity_in_table_2_df = sql_table_2_df[table_2_in_col].dropna().shape[0]
+            quantity_out_table_2_df = sql_table_2_df[table_2_out_col].dropna().shape[0]
+            amount_in_table_2_df = round(sql_table_2_df[table_2_in_col].sum(), 2)
+            amount_out_table_2_df = round(sql_table_2_df[table_2_out_col].sum(), 2)
+        elif table_2_in_out_mode == '+/-单列模式':
+            quantity_in_table_2_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value] > 0][table_2_in_out_value].dropna().shape[0]
+            quantity_out_table_2_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value] < 0][table_2_in_out_value].dropna().shape[0]
+            amount_in_table_2_df = round(sql_table_2_df[sql_table_2_df[table_2_in_out_value] > 0][table_2_in_out_value].sum(), 2)
+            amount_out_table_2_df = round(-sql_table_2_df[sql_table_2_df[table_2_in_out_value] < 0][table_2_in_out_value].sum(), 2)
+
+        elif table_2_in_out_mode == '标识列单列模式':
+            quantity_in_table_2_df = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_in_label][table_2_in_out_value].dropna().shape[0]
+            quantity_out_table_2_df = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_out_label][table_2_in_out_value].dropna().shape[0]
+            amount_in_table_2_df = round(sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_in_label][table_2_in_out_value].sum(), 2)
+            amount_out_table_2_df = round(sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_out_label][table_2_in_out_value].sum(), 2)
+
+        fill_in_xlsx = [['数值合计对比', 0, 1],
+                        [25, 20, 20, 20],
+                        [20,                20,                          20,                        20,                           20],
+                        [['table',      1], ['quantity_in',          1], ['amount_in',          1], ['quantity_out',          1], ['amount_out',          1]],
+                        [[table_1_name, 2], [quantity_in_table_1_df, 3], [amount_in_table_1_df, 4], [quantity_out_table_1_df, 3], [amount_out_table_1_df, 4]],
+                        [[table_2_name, 2], [quantity_in_table_2_df, 3], [amount_in_table_2_df, 4], [quantity_out_table_2_df, 3], [amount_out_table_2_df, 4]],
+                        [['difference', 1], ['=B2-B3',               3], ['=C2-C3',             4], ['=D2-D3',                3], ['=E2-E3',              4]]
+                        ]
+
+        # 填写.xlsx文件
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_cell(file_path, fill_in_xlsx)
+
+        return fill_text
+
+
+    # input output value check 对比模式二：金额分层对比
+    # input output value check 对比模式三：按item分类对比
+    # input output value check 对比模式四：按时序排列
+    def input_output_value_check_layering(self, table_1_name, table_2_name,
+                                          table_1_in_out_mode, sql_table_1_df, table_1_in_col, table_1_out_col, table_1_in_out_value,
+                                          table_1_in_out_col, table_1_in_label, table_1_out_label,
+                                          table_2_in_out_mode, sql_table_2_df, table_2_in_col, table_2_out_col, table_2_in_out_value,
+                                          table_2_in_out_col, table_2_in_label, table_2_out_label,
+                                          table_1_item, table_2_item,
+                                          file_path):
+
+        fill_text = ''
+
+        # 获取分层值
+        if table_1_in_out_mode == '双列模式':
+            amounts_table_1_in_counts = sql_table_1_df[table_1_in_col].dropna().value_counts().sort_index().reset_index()
+            amounts_table_1_in_counts.columns = ['value', 'count_table_1']
+            amounts_table_1_in_counts_set = set(amounts_table_1_in_counts['value'])
+            table_1_in_df = sql_table_1_df[sql_table_1_df[table_1_in_col].isin(amounts_table_1_in_counts_set)].dropna(subset=[table_1_in_col])
+            table_1_in_df_col = table_1_in_col
+
+            amounts_table_1_out_counts = sql_table_1_df[table_1_out_col].dropna().value_counts().sort_index().reset_index()
+            amounts_table_1_out_counts.columns = ['value', 'count_table_1']
+            amounts_table_1_out_counts_set = set(amounts_table_1_out_counts['value'])
+            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_out_col].isin(amounts_table_1_out_counts_set)].dropna(subset=[table_1_out_col])
+            table_1_out_df_col = table_1_out_col
+
+        elif table_1_in_out_mode == '+/-单列模式':
+            amounts_table_1_in_counts = sql_table_1_df[sql_table_1_df[table_1_in_out_value] > 0][table_1_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_1_in_counts.columns = ['value', 'count_table_1']
+            amounts_table_1_in_counts_set = set(amounts_table_1_in_counts['value'])
+            table_1_in_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value].isin(amounts_table_1_in_counts_set)].dropna(subset=[table_1_in_out_value])
+            table_1_in_df_col = table_1_in_out_value
+
+            amounts_table_1_out_counts = sql_table_1_df[sql_table_1_df[table_1_in_out_value] < 0][table_1_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_1_out_counts.columns = ['value', 'count_table_1']
+            amounts_table_1_out_counts['value'] = -amounts_table_1_out_counts['value']              # 负负得正
+            amounts_table_1_out_counts_set = set(amounts_table_1_out_counts['value'])
+            amounts_table_1_out_counts_non = pd.DataFrame()
+            amounts_table_1_out_counts_non['value'] = amounts_table_1_out_counts['value']           # 不改变负号
+            amounts_table_1_out_counts_set_non = set(amounts_table_1_out_counts_non['value'])
+            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_out_col].isin(amounts_table_1_out_counts_set_non)].dropna(subset=[table_1_in_out_value])
+            table_1_out_df_col = table_1_in_out_value
+
+        elif table_1_in_out_mode == '标识列单列模式':
+            amounts_table_1_in_counts = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_in_label][table_1_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_1_in_counts.columns = ['value', 'count_table_1']
+            amounts_table_1_in_counts_set = set(amounts_table_1_in_counts['value'])
+            table_1_in_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value].isin(amounts_table_1_in_counts_set)].dropna(subset=[table_1_in_out_value])
+            table_1_in_df_col = table_1_in_out_value
+
+            amounts_table_1_out_counts = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_out_label][table_1_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_1_out_counts.columns = ['value', 'count_table_1']
+            amounts_table_1_out_counts_set = set(amounts_table_1_out_counts['value'])
+            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value].isin(amounts_table_1_out_counts_set)].dropna(subset=[table_1_in_out_value])
+            table_1_out_df_col = table_1_in_out_value
+        
+        if table_2_in_out_mode == '双列模式':
+            amounts_table_2_in_counts = sql_table_2_df[table_2_in_col].dropna().value_counts().sort_index().reset_index()
+            amounts_table_2_in_counts.columns = ['value', 'count_table_2']
+            amounts_table_2_in_counts_set = set(amounts_table_2_in_counts['value'])
+            table_2_in_df = sql_table_2_df[sql_table_2_df[table_2_in_col].isin(amounts_table_2_in_counts_set)].dropna(subset=[table_2_in_col])
+            table_2_in_df_col = table_2_in_col
+
+            amounts_table_2_out_counts = sql_table_2_df[table_2_out_col].dropna().value_counts().sort_index().reset_index()
+            amounts_table_2_out_counts.columns = ['value', 'count_table_2']
+            amounts_table_2_out_counts_set = set(amounts_table_2_out_counts['value'])
+            table_2_out_df = sql_table_2_df[table_2_out_col].dropna()
+            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_out_col].isin(amounts_table_2_out_counts_set)].dropna(subset=[table_2_out_col])
+            table_2_out_df_col = table_2_out_col
+
+        elif table_2_in_out_mode == '+/-单列模式':
+            amounts_table_2_in_counts = sql_table_2_df[sql_table_2_df[table_2_in_out_value] > 0][table_2_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_2_in_counts.columns = ['value', 'count_table_2']
+            amounts_table_2_in_counts_set = set(amounts_table_2_in_counts['value'])
+            table_2_in_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value].isin(amounts_table_2_in_counts_set)].dropna(subset=[table_2_in_out_value])
+            table_2_in_df_col = table_2_in_out_value
+
+            amounts_table_2_out_counts = sql_table_2_df[sql_table_2_df[table_2_in_out_value] < 0][table_2_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_2_out_counts.columns = ['value', 'count_table_2']
+            amounts_table_2_out_counts['value'] = -amounts_table_2_out_counts['value']                  # 负负得正
+            amounts_table_2_out_counts_set = set(amounts_table_2_out_counts['value'])
+            amounts_table_2_out_counts_non = pd.DataFrame()
+            amounts_table_2_out_counts_non['value'] = amounts_table_2_out_counts['value']               # 不改变负号
+            amounts_table_2_out_counts_set_non = set(amounts_table_2_out_counts_non['value'])
+            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_out_col].isin(amounts_table_2_out_counts_set_non)].dropna(subset=[table_2_in_out_value])
+            table_2_out_df_col = table_2_in_out_value
+
+        elif table_2_in_out_mode == '标识列单列模式':
+            amounts_table_2_in_counts = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_in_label][table_2_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_2_in_counts.columns = ['value', 'count_table_2']
+            amounts_table_2_in_counts_set = set(amounts_table_2_in_counts['value'])
+            table_2_in_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value].isin(amounts_table_2_in_counts_set)].dropna(subset=[table_2_in_out_value])
+            table_2_in_df_col = table_2_in_out_value
+
+            amounts_table_2_out_counts = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_out_label][table_2_in_out_value].dropna().value_counts().sort_index().reset_index()
+            amounts_table_2_out_counts.columns = ['value', 'count_table_2']
+            amounts_table_2_out_counts_set = set(amounts_table_2_out_counts['value'])
+            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value].isin(amounts_table_2_out_counts_set)].dropna(subset=[table_2_in_out_value])
+            table_2_out_df_col = table_2_in_out_value
+
+        # 对比模式二：金额分层对比
+        # 共同值集合
+        common_amounts_in = amounts_table_1_in_counts_set & amounts_table_2_in_counts_set
+        common_amounts_out = amounts_table_1_out_counts_set & amounts_table_2_out_counts_set
+
+        # 共同金额的计数差异
+        common_table_1_in = amounts_table_1_in_counts[amounts_table_1_in_counts['value'].isin(common_amounts_in)].set_index('value')
+        common_table_2_in = amounts_table_2_in_counts[amounts_table_2_in_counts['value'].isin(common_amounts_in)].set_index('value')
+        common_table_1_out = amounts_table_1_out_counts[amounts_table_1_out_counts['value'].isin(common_amounts_out)].set_index('value')
+        common_table_2_out = amounts_table_2_out_counts[amounts_table_2_out_counts['value'].isin(common_amounts_out)].set_index('value')
+
+        # 合并对比
+        comparison_in = common_table_1_in.join(common_table_2_in, how='inner', lsuffix='_table_1', rsuffix='_table_2')
+        comparison_in['difference'] = comparison_in['count_table_1'] - comparison_in['count_table_2']
+        comparison_out = common_table_1_out.join(common_table_2_out, how='inner', lsuffix='_table_1', rsuffix='_table_2')
+        comparison_out['difference'] = comparison_out['count_table_1'] - comparison_out['count_table_2']
+
+        # 筛选所有计数差异不为0的项（共同金额但计数不同）
+        non_zero_diff_in = comparison_in[comparison_in['difference'] != 0][['count_table_1', 'count_table_2', 'difference']]
+        non_zero_diff_out = comparison_out[comparison_out['difference'] != 0][['count_table_1', 'count_table_2', 'difference']]
+
+        # 找出只在流水或明细中出现的金额
+        only_table_1_in = amounts_table_1_in_counts_set - amounts_table_2_in_counts_set
+        only_table_2_in = amounts_table_2_in_counts_set - amounts_table_1_in_counts_set
+        only_table_1_out = amounts_table_1_out_counts_set - amounts_table_2_out_counts_set
+        only_table_2_out = amounts_table_2_out_counts_set - amounts_table_1_out_counts_set
+
+        # input
+        height_list = [25,]
+        fill_in_xlsx = [['数值合计对比', 6, 1],
+                        height_list,
+                        [20,                 20,                20,                20               ],
+                        [['input_value', 1], [table_1_name, 1], [table_2_name, 1], ['difference', 1]],
+                        ]
+
+        # 第一部分：共同金额但计数不同的情况
+        if len(non_zero_diff_in) > 0:            
+            for amount in non_zero_diff_in.index:
+                table_1_count = comparison_in.loc[amount, 'count_table_1']
+                table_2_count = comparison_in.loc[amount, 'count_table_2']
+                diff_desc = table_1_count - table_2_count
+                fill_in_xlsx.append([[amount, 4], [table_1_count, 3], [table_2_count, 3], [diff_desc, 3]])
+                height_list.append(20)
+
+        # 第二部分：只在 table 1 中出现的金额
+        if len(only_table_1_in) > 0:            
+            only_table_1_df = amounts_table_1_in_counts[amounts_table_1_in_counts['value'].isin(only_table_1_in)].set_index('value')
+            for amount in only_table_1_df.index:
+                table_1_count = only_table_1_df.loc[amount, 'count_table_1']
+                fill_in_xlsx.append([[amount, 4], [table_1_count, 3], [0, 3], [table_1_count, 3]])
+                height_list.append(20)
+
+        # 第三部分：只在 table 2 中出现的金额
+        if len(only_table_2_in) > 0:            
+            only_table_2_df = amounts_table_2_in_counts[amounts_table_2_in_counts['value'].isin(only_table_2_in)].set_index('value')
+            for amount in only_table_2_df.index:
+                table_2_count = only_table_2_df.loc[amount, 'count_table_2']
+                fill_in_xlsx.append([[amount, 4], [0, 3], [table_2_count, 3], [-table_2_count, 3]])
+                height_list.append(20)
+
+        # 填写.xlsx文件
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_cell(file_path, fill_in_xlsx)
+
+        # 明细表
+        non_zero_diff_reset_in = non_zero_diff_in.reset_index()
+        # 数值分层对比_in_共同数值但计数不同_table_1
+        non_zero_diff_reset_in = non_zero_diff_reset_in.rename(columns={'value': table_1_in_df_col})
+        if table_1_in_out_mode == '双列模式':
+            fill_df = pd.merge(table_1_in_df, non_zero_diff_reset_in[[table_1_in_df_col]], on=table_1_in_df_col, how='inner')
+        elif table_1_in_out_mode == '+/-单列模式':
+            fill_df = pd.merge(table_1_in_df, non_zero_diff_reset_in[[table_1_in_df_col]], on=table_1_in_df_col, how='inner')
+        elif table_1_in_out_mode == '标识列单列模式':
+            fill_df = pd.merge(table_1_in_df, non_zero_diff_reset_in[[table_1_in_df_col]], on=table_1_in_df_col, how='inner')
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '共同数值但计数不同table_in_1', fill_df)
+
+        # 数值分层对比_in_共同数值但计数不同_table_2
+        non_zero_diff_reset_in = non_zero_diff_reset_in.rename(columns={table_1_in_df_col: table_2_in_df_col})
+        if table_2_in_out_mode == '双列模式':
+            fill_df = pd.merge(table_2_in_df, non_zero_diff_reset_in[[table_2_in_df_col]], on=table_2_in_df_col, how='inner')
+        elif table_2_in_out_mode == '+/-单列模式':
+            fill_df = pd.merge(table_2_in_df, non_zero_diff_reset_in[[table_2_in_df_col]], on=table_2_in_df_col, how='inner')
+        elif table_2_in_out_mode == '标识列单列模式':
+            fill_df = pd.merge(table_2_in_df, non_zero_diff_reset_in[[table_2_in_df_col]], on=table_2_in_df_col, how='inner')
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '共同数值但计数不同table_in_2', fill_df)
+
+        # 数值分层对比_in_只在 table 1 中出现的数值
+        if table_1_in_out_mode == '双列模式':
+            fill_df = table_1_in_df[table_1_in_df[table_1_in_df_col].isin(only_table_1_in)]
+        elif table_1_in_out_mode == '+/-单列模式':
+            fill_df = table_1_in_df[table_1_in_df[table_1_in_df_col].isin(only_table_1_in)]
+        elif table_1_in_out_mode == '标识列单列模式':
+            fill_df = table_1_in_df[table_1_in_df[table_1_in_df_col].isin(only_table_1_in)]
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '只在table_in_1中出现的数值', fill_df)
+
+        # 数值分层对比_in_只在 table 2 中出现的数值
+        if table_2_in_out_mode == '双列模式':
+            fill_df = table_2_in_df[table_2_in_df[table_2_in_df_col].isin(only_table_2_in)]
+        elif table_2_in_out_mode == '+/-单列模式':
+            fill_df = table_2_in_df[table_2_in_df[table_2_in_df_col].isin(only_table_2_in)]
+        elif table_2_in_out_mode == '标识列单列模式':
+            fill_df = table_2_in_df[table_2_in_df[table_2_in_df_col].isin(only_table_2_in)]
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '只在table_in_2中出现的数值', fill_df)
+
+        # output
+        h = 6 + len(non_zero_diff_in) + len(only_table_1_in) + len(only_table_2_in) + 3
+        height_list = [25,]
+        fill_in_xlsx = [['数值合计对比', h, 1],
+                        height_list,
+                        [20,                  20,                20,                20               ],
+                        [['output_value', 1], [table_1_name, 1], [table_2_name, 1], ['difference', 1]],
+                        ]
+
+        # 第一部分：共同金额但计数不同的情况
+        if len(non_zero_diff_out) > 0:            
+            for amount in non_zero_diff_out.index:
+                table_1_count = comparison_out.loc[amount, 'count_table_1']
+                table_2_count = comparison_out.loc[amount, 'count_table_2']
+                diff_desc = table_1_count - table_2_count
+                fill_in_xlsx.append([[amount, 4], [table_1_count, 3], [table_2_count, 3], [diff_desc, 3]])
+                height_list.append(20)
+
+        # 第二部分：只在 table 1 中出现的金额
+        if len(only_table_1_out) > 0:            
+            only_table_1_df = amounts_table_1_out_counts[amounts_table_1_out_counts['value'].isin(only_table_1_out)].set_index('value')
+            for amount in only_table_1_df.index:
+                table_1_count = only_table_1_df.loc[amount, 'count_table_1']
+                fill_in_xlsx.append([[amount, 4], [table_1_count, 3], [0, 3], [table_1_count, 3]])
+                height_list.append(20)
+
+        # 第三部分：只在 table 2 中出现的金额
+        if len(only_table_2_out) > 0:
+            only_table_2_df = amounts_table_2_out_counts[amounts_table_2_out_counts['value'].isin(only_table_2_out)].set_index('value')
+            for amount in only_table_2_df.index:
+                table_2_count = only_table_2_df.loc[amount, 'count_table_2']
+                fill_in_xlsx.append([[amount, 4], [0, 3], [table_2_count, 3], [-table_2_count, 3]])
+                height_list.append(20)
+
+        # 填写.xlsx文件
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_cell(file_path, fill_in_xlsx)
+
+        non_zero_diff_reset_out = non_zero_diff_out.reset_index()
+
+        # 数值分层对比_out_共同数值但计数不同_table_1
+        non_zero_diff_reset_out = non_zero_diff_reset_out.rename(columns={'value': table_1_out_df_col})
+        if table_1_in_out_mode == '双列模式':
+            fill_df = pd.merge(table_1_out_df, non_zero_diff_reset_out[[table_1_out_df_col]], on=table_1_out_df_col, how='inner')
+        elif table_1_in_out_mode == '+/-单列模式':
+            fill_df = pd.merge(table_1_out_df, non_zero_diff_reset_out[[table_1_out_df_col]], on=table_1_out_df_col, how='inner')
+        elif table_1_in_out_mode == '标识列单列模式':
+            fill_df = pd.merge(table_1_out_df, non_zero_diff_reset_out[[table_1_out_df_col]], on=table_1_out_df_col, how='inner')
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '共同数值但计数不同table_out_1', fill_df)
+
+        # 数值分层对比_out_共同数值但计数不同_table_2
+        non_zero_diff_reset_out = non_zero_diff_reset_out.rename(columns={table_1_out_df_col: table_2_out_df_col})
+        if table_2_in_out_mode == '双列模式':
+            fill_df = pd.merge(table_2_out_df, non_zero_diff_reset_out[[table_2_out_df_col]], on=table_2_out_df_col, how='inner')
+        elif table_2_in_out_mode == '+/-单列模式':
+            fill_df = pd.merge(table_2_out_df, non_zero_diff_reset_out[[table_2_out_df_col]], on=table_2_out_df_col, how='inner')
+        elif table_2_in_out_mode == '标识列单列模式':
+            fill_df = pd.merge(table_2_out_df, non_zero_diff_reset_out[[table_2_out_df_col]], on=table_2_out_df_col, how='inner')
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '共同数值但计数不同table_out_2', fill_df)
+
+        # 数值分层对比_out_只在 table 1 中出现的数值
+        if table_1_in_out_mode == '双列模式':
+            fill_df = table_1_out_df[table_1_out_df[table_1_out_df_col].isin(only_table_1_out)]
+        elif table_1_in_out_mode == '+/-单列模式':
+            fill_df = table_1_out_df[table_1_out_df[table_1_out_df_col].isin(only_table_1_out)]
+        elif table_1_in_out_mode == '标识列单列模式':
+            fill_df = table_1_out_df[table_1_out_df[table_1_out_df_col].isin(only_table_1_out)]
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '只在table_out_1中出现的数值', fill_df)
+
+        # 数值分层对比_out_只在 table 2 中出现的数值
+        if table_2_in_out_mode == '双列模式':
+            fill_df = table_2_out_df[table_2_out_df[table_2_out_df_col].isin(only_table_2_out)]
+        elif table_2_in_out_mode == '+/-单列模式':
+            fill_df = table_2_out_df[table_2_out_df[table_2_out_df_col].isin(only_table_2_out)]
+        elif table_2_in_out_mode == '标识列单列模式':
+            fill_df = table_2_out_df[table_2_out_df[table_2_out_df_col].isin(only_table_2_out)]
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet(file_path, '只在table_out_2中出现的数值', fill_df)
+
+
+        # 对比模式三：按item分类对比
+        fill_df = (table_1_in_df.assign(**{table_1_item: table_1_in_df[table_1_item].fillna('空白')})
+                                .groupby(table_1_item, as_index=False)[[table_1_in_df_col]].sum())
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_in按item分类汇总', fill_df, 1, 1)
+        fill_df = (table_2_in_df.assign(**{table_2_item: table_2_in_df[table_2_item].fillna('空白')})
+                                .groupby(table_2_item, as_index=False)[[table_2_in_df_col]].sum())
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_in按item分类汇总', fill_df, 1, 4)
+
+        fill_df = (table_1_out_df.assign(**{table_1_item: table_1_out_df[table_1_item].fillna('空白')})
+                                .groupby(table_1_item, as_index=False)[[table_1_out_df_col]].sum())
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_out按item分类汇总', fill_df, 1, 1)
+        fill_df = (table_2_out_df.assign(**{table_2_item: table_2_out_df[table_2_item].fillna('空白')})
+                                .groupby(table_2_item, as_index=False)[[table_2_out_df_col]].sum())
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_out按item分类汇总', fill_df, 1, 4)
+
+
+        # 对比模式四：按时序排列
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_in按时序排列', table_1_in_df, 1, 1)
+        c_w = len(table_1_in_df.columns) + 2
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_in按时序排列', table_2_in_df, 1, c_w)
+
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_out按时序排列', table_1_out_df, 1, 1)
+        c_w = len(table_1_out_df.columns) + 2
+        fill_text += openxl_xlsx_tool_class_example.fill_in_xlsx_sheet_cell(file_path, 'table_out按时序排列', table_2_out_df, 1, c_w)
+
+
+        return fill_text
