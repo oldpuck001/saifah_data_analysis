@@ -1,4 +1,4 @@
-# data_import_file.py
+# sql_sqlite_win.py
 
 import sys
 import os
@@ -9,7 +9,7 @@ if ROOT not in sys.path:
 
 from src.saifah_data_analysis import ui_tk_root
 
-title = 'Data File Import Cleaning'
+title = 'SQLite'
 geometry = '1280x720+50+50'
 control_frame_n = 2
 control_frame_config = [
@@ -18,8 +18,8 @@ control_frame_config = [
                         'function_name':  '',
                         'function_para':  ''},
 
-                        {'name':          'data_import_clean_file',
-                        'button_name':    '选择导入文件',
+                        {'name':          'sql_sqlite_win',
+                        'button_name':    '',
                         'function_name':  '',
                         'function_para':  0},
                        ]

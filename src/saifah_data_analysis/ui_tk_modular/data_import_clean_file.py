@@ -47,7 +47,6 @@ class data_import_clean_file_modular:
         tk.Button(frame_2, text='读取数据', command=lambda: self.button_load_fun(frame_1, frame_2, frame_3, frame_4, frame_5, frame_6, frame_7, text_area), width=17).pack(side=tk.LEFT, padx=(5, 5), pady=5)
 
         # 读取文件参数区
-
         frame_3 = tk.Frame(frame_result)
         frame_3.pack(side=tk.TOP, fill=tk.BOTH)
 

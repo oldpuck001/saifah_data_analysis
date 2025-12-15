@@ -82,50 +82,105 @@ class sql_sqlite_tool_class:
             self.close_connection()
 
 
-    # # 导出.xlsx文件
-    # def sqlite_to_xlsx(self, database_file_path, table_name, xlsx_file_path):
-    #     try:
-    #         result = self.execute_query(database_file_path, f"SELECT * FROM {table_name}")
-    #         result.to_excel(xlsx_file_path)
-    #         return True
-    #     except:
-    #         return False
+    # 执行SQL指令
+    def sql_sqlite_command(self, sql_path, sql_command):
+
+        conn = sqlite3.connect(sql_path)
+        curs = conn.cursor()
+        try:
+            sql_clean = sql_command.strip()
+            sql_type = sql_clean.lower().split()[0]
+            curs.execute(sql_clean)
+            # 查询语句
+            if sql_type == 'select':
+                rows = curs.fetchall()
+                columns = [desc[0] for desc in curs.description]
+                if rows:
+                    result_lines = []
+                    result_lines.append(" | ".join(columns))
+                    result_lines.append("-" * 50)
+                    for row in rows:
+                        result_lines.append(" | ".join(str(v) for v in row))
+                    result_text = (f'\n指令：\n{sql_command}\n'
+                                   f'查询结果（{len(rows)} 行）：\n' + '\n'.join(result_lines) + '\n')
+                else:
+                    result_text = (f'\n指令：\n{sql_command}\n''查询成功，但结果为空。\n')
+
+            # 非查询语句
+            else:
+                conn.commit()
+                result_text = (f'\n指令：\n{sql_command}\n执行成功！影响行数：{curs.rowcount}\n')
+
+        except Exception as e:
+            result_text = (f'\n指令：\n{sql_command}\n执行失败！\n错误信息：{str(e)}\n')
+
+        finally:
+            curs.close()
+            conn.close()
+
+        return result_text
 
 
-    # # 检查表是否存在
-    # def table_exists(self, database_file_path, table_name):
-    #     try:
-    #         self.conn = sqlite3.connect(database_file_path)
-    #         cursor = self.conn.cursor()
-    #         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
-    #         result = cursor.fetchone()
-    #         if result is None:
-    #             return False
-    #         else:
-    #             return True
-    #     except Error as e:
-    #         return False
-    #     finally:
-    #         self.close_connection()
+    # 获取表信息
+    def get_table_info(self, sql_path, table_name):
+        try:
+            # 建立数据库连接
+            self.conn = sqlite3.connect(sql_path)
+            # 表结构
+            cursor = self.conn.cursor()
+            cursor.execute(f"PRAGMA table_info({table_name})")
+            columns = cursor.fetchall()
+            # 行数
+            cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+            row_count = cursor.fetchone()[0]
+            return [True, [columns, row_count]]
+        except Error as e:
+            return [False, e]
+        finally:
+            self.close_connection()
 
 
-    # # 获取表信息
-    # def get_table_info(self, database_file_path, table_name):
-    #     try:
-    #         # 建立数据库连接
-    #         self.conn = sqlite3.connect(database_file_path)
-    #         # 表结构
-    #         cursor = self.conn.cursor()
-    #         cursor.execute(f"PRAGMA table_info({table_name})")
-    #         columns = cursor.fetchall()
-    #         # 行数
-    #         cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-    #         row_count = cursor.fetchone()[0]
-    #         return {
-    #             'columns': columns,
-    #             'row_count': row_count
-    #         }
-    #     except Error as e:
-    #         return None
-    #     finally:
-    #         self.close_connection()
+    # 检查表是否存在
+    def table_exists(self, sql_path, table_name):
+        try:
+            self.conn = sqlite3.connect(sql_path)
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
+            result = cursor.fetchone()
+            if result is None:
+                return [False, f'False! The tabel {table_name} was not found in the database.\n']
+            else:
+                return [True, f'True! The tabel {table_name} was found in the database.\n']
+        except Error as e:
+            return [False, e]
+        finally:
+            self.close_connection()
+
+
+    # 删除单个table
+    def del_single_table(self, sql_path, table_name):
+        try:
+            self.conn = sqlite3.connect(sql_path)
+            cursor = self.conn.cursor()
+            cursor.execute(f'DROP TABLE IF EXISTS "{table_name}"')
+            return [True, 'Table deletion successful!\n']
+        except Error as e:
+            return [False, e]
+        finally:
+            self.close_connection()
+
+
+    # 删除所有table
+    def del_all_tables(self, sql_path):
+        try:
+            self.conn = sqlite3.connect(sql_path)
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")        # 查询所有表名
+            tables = cursor.fetchall()
+            for (table_name,) in tables:
+                cursor.execute(f"DROP TABLE IF EXISTS '{table_name}'")                                              # 逐个删除
+            return [True, 'All tables deletion successful!\n']
+        except Error as e:
+            return [False, e]
+        finally:
+            self.close_connection()
