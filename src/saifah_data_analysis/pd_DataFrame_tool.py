@@ -256,22 +256,22 @@ class pd_DataFrame_tool_class:
             amounts_table_1_out_counts['value'] = -amounts_table_1_out_counts['value']              # 负负得正
             amounts_table_1_out_counts_set = set(amounts_table_1_out_counts['value'])
             amounts_table_1_out_counts_non = pd.DataFrame()
-            amounts_table_1_out_counts_non['value'] = amounts_table_1_out_counts['value']           # 不改变负号
+            amounts_table_1_out_counts_non['value'] = -amounts_table_1_out_counts['value']           # 不改变负号
             amounts_table_1_out_counts_set_non = set(amounts_table_1_out_counts_non['value'])
-            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_out_col].isin(amounts_table_1_out_counts_set_non)].dropna(subset=[table_1_in_out_value])
+            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value].isin(amounts_table_1_out_counts_set_non)].dropna(subset=[table_1_in_out_value])
             table_1_out_df_col = table_1_in_out_value
 
         elif table_1_in_out_mode == '标识列单列模式':
             amounts_table_1_in_counts = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_in_label][table_1_in_out_value].dropna().value_counts().sort_index().reset_index()
             amounts_table_1_in_counts.columns = ['value', 'count_table_1']
             amounts_table_1_in_counts_set = set(amounts_table_1_in_counts['value'])
-            table_1_in_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value].isin(amounts_table_1_in_counts_set)].dropna(subset=[table_1_in_out_value])
+            table_1_in_df = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_in_label].dropna(subset=[table_1_in_out_value])
             table_1_in_df_col = table_1_in_out_value
 
             amounts_table_1_out_counts = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_out_label][table_1_in_out_value].dropna().value_counts().sort_index().reset_index()
             amounts_table_1_out_counts.columns = ['value', 'count_table_1']
             amounts_table_1_out_counts_set = set(amounts_table_1_out_counts['value'])
-            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_in_out_value].isin(amounts_table_1_out_counts_set)].dropna(subset=[table_1_in_out_value])
+            table_1_out_df = sql_table_1_df[sql_table_1_df[table_1_in_out_col] == table_1_out_label].dropna(subset=[table_1_in_out_value])
             table_1_out_df_col = table_1_in_out_value
         
         if table_2_in_out_mode == '双列模式':
@@ -300,22 +300,22 @@ class pd_DataFrame_tool_class:
             amounts_table_2_out_counts['value'] = -amounts_table_2_out_counts['value']                  # 负负得正
             amounts_table_2_out_counts_set = set(amounts_table_2_out_counts['value'])
             amounts_table_2_out_counts_non = pd.DataFrame()
-            amounts_table_2_out_counts_non['value'] = amounts_table_2_out_counts['value']               # 不改变负号
+            amounts_table_2_out_counts_non['value'] = -amounts_table_2_out_counts['value']              # 不改变负号
             amounts_table_2_out_counts_set_non = set(amounts_table_2_out_counts_non['value'])
-            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_out_col].isin(amounts_table_2_out_counts_set_non)].dropna(subset=[table_2_in_out_value])
+            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value].isin(amounts_table_2_out_counts_set_non)].dropna(subset=[table_2_in_out_value])
             table_2_out_df_col = table_2_in_out_value
 
         elif table_2_in_out_mode == '标识列单列模式':
             amounts_table_2_in_counts = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_in_label][table_2_in_out_value].dropna().value_counts().sort_index().reset_index()
             amounts_table_2_in_counts.columns = ['value', 'count_table_2']
             amounts_table_2_in_counts_set = set(amounts_table_2_in_counts['value'])
-            table_2_in_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value].isin(amounts_table_2_in_counts_set)].dropna(subset=[table_2_in_out_value])
+            table_2_in_df = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_in_label].dropna(subset=[table_2_in_out_value])
             table_2_in_df_col = table_2_in_out_value
 
             amounts_table_2_out_counts = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_out_label][table_2_in_out_value].dropna().value_counts().sort_index().reset_index()
             amounts_table_2_out_counts.columns = ['value', 'count_table_2']
             amounts_table_2_out_counts_set = set(amounts_table_2_out_counts['value'])
-            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_in_out_value].isin(amounts_table_2_out_counts_set)].dropna(subset=[table_2_in_out_value])
+            table_2_out_df = sql_table_2_df[sql_table_2_df[table_2_in_out_col] == table_2_out_label].dropna(subset=[table_2_in_out_value])
             table_2_out_df_col = table_2_in_out_value
 
         # 对比模式二：金额分层对比
