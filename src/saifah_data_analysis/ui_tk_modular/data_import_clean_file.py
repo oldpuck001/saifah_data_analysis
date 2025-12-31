@@ -8,8 +8,8 @@ from tkinter.scrolledtext import ScrolledText
 import pandas as pd
 import subprocess
 from . import fill_area_text
-from ..pd_DataFrame_tool import pd_DataFrame_tool_class
-from ..sql_qlite_tool import sql_sqlite_tool_class
+from ..DataFrame_tool_pd import pd_DataFrame_tool_class
+from ..sql_tool_sqlite import sql_sqlite_tool_class
 
 pd_DataFrame_tool_example = pd_DataFrame_tool_class()
 sql_table_import = sql_sqlite_tool_class()
@@ -210,11 +210,6 @@ class data_import_clean_file_modular:
             fill_text += 'File selection successful!\n'
         else:
             fill_text += f'File selection failed!\n'
-
-        entry_widget.config(state='normal')
-        entry_widget.delete(0, tk.END)
-        entry_widget.insert(0, path)
-        entry_widget.config(state='readonly')
 
         fill_area_text.text_area_fill(text_area, fill_text)
 

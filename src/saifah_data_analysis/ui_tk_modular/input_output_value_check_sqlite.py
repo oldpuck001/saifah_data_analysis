@@ -4,9 +4,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from . import fill_area_text
-from ..pd_DataFrame_tool import pd_DataFrame_tool_class
+from ..DataFrame_tool_pd import pd_DataFrame_tool_class
 from ..openxl_xlsx_tool import openxl_xlsx_tool_class
-from ..sql_qlite_tool import sql_sqlite_tool_class
+from ..sql_tool_sqlite import sql_sqlite_tool_class
 
 openxl_xlsx_tool_class_example = openxl_xlsx_tool_class()
 pd_DataFrame_tool_class_example = pd_DataFrame_tool_class()

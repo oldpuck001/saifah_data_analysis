@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from . import fill_area_text
-from ..sql_qlite_tool import sql_sqlite_tool_class
+from ..sql_tool_sqlite import sql_sqlite_tool_class
 
 sql_qlite_tool_example = sql_sqlite_tool_class()
 

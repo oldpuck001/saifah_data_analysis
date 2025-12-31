@@ -9,8 +9,8 @@ from tkinter import ttk
 from tkinter import messagebox
 import subprocess
 from . import fill_area_text
-from ..pd_DataFrame_tool import pd_DataFrame_tool_class
-from ..sql_qlite_tool import sql_sqlite_tool_class
+from ..DataFrame_tool_pd import pd_DataFrame_tool_class
+from ..sql_tool_sqlite import sql_sqlite_tool_class
 
 pd_DataFrame_tool_example = pd_DataFrame_tool_class()
 sql_sqlite_tool_exampoe = sql_sqlite_tool_class()
@@ -20,7 +20,7 @@ class sql_sqlite_win_modular_class:
     def sql_sqlite_win_modular_frame(self, root, control_frame_config, text_area):
 
         frame_result = tk.Frame(root)
-        frame_result.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=5)
+        frame_result.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         # SQL指令输入区
         frame_1 = tk.Frame(frame_result)
