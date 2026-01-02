@@ -7,6 +7,7 @@ from . import fill_area_text
 from ..DataFrame_tools_pd import sheetnames_import_fun
 from ..DataFrame_tools_pd import columns_title_fun
 from ..DataFrame_tools_pd import sheet_pivot_table_fun
+from ..xlsx_tools_openxl import export_pivot_new_xlsx_fun
 
 class sheet_subtotals_ui_class:
 
@@ -152,62 +153,14 @@ class sheet_subtotals_ui_class:
         if column_value == row_value or column_value == subtotal_value or row_value == subtotal_value:
 
             fill_text += '行目录分类列、列标题分类列、数值列必须为不同列，请重新选择！'
-
-            fill_area_text.text_area_fill(text_area, fill_text)
         
         else:
 
             df_pivot_result = sheet_pivot_table_fun.sheet_pivot_table(file_path, sheet_name, row_value, column_value, subtotal_value)
             if df_pivot_result[0]:
                 df_pivot_table = df_pivot_result[1]
-            print(df_pivot_table)
+                fill_text += export_pivot_new_xlsx_fun.export_pivot_new_xlsx(df_pivot_table)
+            else:
+                fill_text += '生成失败！'
 
-# from openpyxl.utils import get_column_letter
-#             # 创建一个Excel工作簿
-#             wb = openpyxl.Workbook()
-#             ws = wb.active
-
-#             # 重設索引並將DataFrame的數據添加到Excel工作表
-#             exportdf.reset_index(inplace=True)
-
-#             # 修改DataFrame的第1列第1行（列标题）为空白
-#             exportdf.columns.values[0] = ''
-#             for r in openpyxl.utils.dataframe.dataframe_to_rows(exportdf, index=False, header=True):
-#                 ws.append(r)
-
-#             # 调整列宽
-#             for column_cells in ws.columns:
-#                 length = max(len(str(cell.value))+8 for cell in column_cells)
-#                 ws.column_dimensions[column_cells[0].column_letter].width = length
-
-#             # 添加合计公式到最后一列
-#             colnumber = ws.max_column + 1
-#             row_sum_title = ws.cell(row=1, column=colnumber)
-#             row_sum_title.value = 'Total'
-#             for row_index, row in enumerate(ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column)):
-#                 row_sum_cell = ws.cell(row=row_index + 2, column=colnumber)
-#                 row_sum_cell.value = f'=SUM({row[1].coordinate}:{row[-2].coordinate})'
-#                 row_sum_cell.number_format = '#,##0.00'
-
-#             # 添加合计公式到最后一行
-#             rownumber = ws.max_row+1
-#             col_sum_title = ws.cell(row=rownumber, column=1)
-#             col_sum_title.value = 'Total'
-#             for col_index in range(2, ws.max_column + 1):
-#                 col_letter = get_column_letter(col_index)
-#                 col_sum_cell = ws.cell(row=rownumber, column=col_index)
-#                 col_sum_cell.value = f'=SUM({col_letter}2:{col_letter}{ws.max_row-1})'
-#                 col_sum_cell.number_format = '#,##0.00'
-                
-#             # 设置数值单元格格式为两位小数且有千分位符
-#             for row in ws.iter_rows(min_row=2, max_row=ws.max_row - 1, min_col=2, max_col=ws.max_column):
-#                 for cell in row:
-#                     if isinstance(cell.value, (int, float)):
-#                         cell.number_format = '#,##0.00'  # 设置为带千分位和两位小数
-
-#             # 保存Excel文件
-#             wb.save(save_path)
-
-#         result_text = {'result_message': '生成成功！'}
-
-#         return ['subtotals_generate', result_text]
+        fill_area_text.text_area_fill(text_area, fill_text)
