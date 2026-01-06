@@ -9,6 +9,7 @@ from .ui_tk_modular import input_output_value_check_sqlite
 from .ui_tk_modular import sql_sqlite_win_modular
 from .ui_tk_modular import sheets_script_ui
 from .ui_tk_modular import sheet_subtotals_ui
+from .ui_tk_modular import sheet_regex_ui
 
 create_select_database_sqlite_modular_class = create_select_database_sqlite.create_select_database_sqlite_modular()
 data_import_clean_file_modular_class = data_import_clean_file.data_import_clean_file_modular()
@@ -16,6 +17,7 @@ input_output_value_check_sqlite_modular_class = input_output_value_check_sqlite.
 sql_sqlite_win_modular_class = sql_sqlite_win_modular.sql_sqlite_win_modular_class()
 sheets_script_ui_class = sheets_script_ui.sheets_script_ui_class()
 sheet_subtotals_ui_class = sheet_subtotals_ui.sheet_subtotals_ui_class()
+sheet_regex_ui_class = sheet_regex_ui.sheet_regex_ui_class()
 
 class App:
     def __init__(self, title='My Application', geometry='1024x768+140+130', minsize_x=640, minsize_y=360, maxsize_x=1920, maxsize_y=1080,
@@ -43,8 +45,15 @@ class App:
         self.root.control_frame_list = []                               # 自定义模块框架列表
 
         # 操作记录区
-        self.text_area = ScrolledText(self.root)
-        self.text_area.pack(side=tk.BOTTOM, expand=True, fill=tk.BOTH)
+        self.frame_text_area = tk.Frame(self.root)
+        self.frame_text_area.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        tk.Label(self.frame_text_area, text='Operation Log', anchor='w').pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
+        try:
+            height_value = self.control_frame_config[self.control_frame_n]['text_area_hight']
+            self.text_area = ScrolledText(self.frame_text_area, height=height_value)
+        except:
+            self.text_area = ScrolledText(self.frame_text_area)
+        self.text_area.pack(side=tk.TOP, expand=True, fill=tk.X)
         self.text_area.config(state='disabled')
 
         # 选择选取控件区
@@ -85,6 +94,11 @@ class App:
                                                                              control_frame_config=self.control_frame_config[n],
                                                                              text_area=self.text_area))
 
+            elif self.control_frame_config[n]['name'] in ['sheet_regex']:
+                self.root.control_frame_list.append(sheet_regex_ui_class.
+                                                    sheet_regex_ui_frame(root=self.root,
+                                                                         control_frame_config=self.control_frame_config[n],
+                                                                         text_area=self.text_area))
 
     def bring_to_front(self):
         self.root.lift()
