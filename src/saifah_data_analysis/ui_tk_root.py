@@ -5,19 +5,11 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from .ui_tk_modular import create_select_database_sqlite
 from .ui_tk_modular import data_import_clean_file
-from .ui_tk_modular import input_output_value_check_sqlite
 from .ui_tk_modular import sql_sqlite_win_modular
-from .ui_tk_modular import sheets_script_ui
-from .ui_tk_modular import sheet_subtotals_ui
-from .ui_tk_modular import sheet_regex_ui
 
 create_select_database_sqlite_modular_class = create_select_database_sqlite.create_select_database_sqlite_modular()
 data_import_clean_file_modular_class = data_import_clean_file.data_import_clean_file_modular()
-input_output_value_check_sqlite_modular_class = input_output_value_check_sqlite.input_output_value_check_sqlite_modular()
 sql_sqlite_win_modular_class = sql_sqlite_win_modular.sql_sqlite_win_modular_class()
-sheets_script_ui_class = sheets_script_ui.sheets_script_ui_class()
-sheet_subtotals_ui_class = sheet_subtotals_ui.sheet_subtotals_ui_class()
-sheet_regex_ui_class = sheet_regex_ui.sheet_regex_ui_class()
 
 class App:
     def __init__(self, title='My Application', geometry='1024x768+140+130', minsize_x=640, minsize_y=360, maxsize_x=1920, maxsize_y=1080,
@@ -69,36 +61,11 @@ class App:
                                                     data_import_clean_file_frame(root=self.root,
                                                                                  control_frame_config=self.control_frame_config[n],
                                                                                  text_area=self.text_area))
-
-            elif self.control_frame_config[n]['name'] in ['input_output_value_check_sqlite']:
-                self.root.control_frame_list.append(input_output_value_check_sqlite_modular_class.
-                                                    input_output_value_check_sqlite_frame(root=self.root,
-                                                                                          control_frame_config=self.control_frame_config[n],
-                                                                                          text_area=self.text_area))
-
             elif self.control_frame_config[n]['name'] in ['sql_sqlite_win']:
                 self.root.control_frame_list.append(sql_sqlite_win_modular_class.
                                                     sql_sqlite_win_modular_frame(root=self.root,
                                                                                  control_frame_config=self.control_frame_config[n],
                                                                                  text_area=self.text_area))
-
-            elif self.control_frame_config[n]['name'] in ['sheets_script']:
-                self.root.control_frame_list.append(sheets_script_ui_class.
-                                                    sheets_script_ui_frame(root=self.root,
-                                                                           control_frame_config=self.control_frame_config[n],
-                                                                           text_area=self.text_area))
-
-            elif self.control_frame_config[n]['name'] in ['sheet_subtotals']:
-                self.root.control_frame_list.append(sheet_subtotals_ui_class.
-                                                    sheet_subtotals_ui_frame(root=self.root,
-                                                                             control_frame_config=self.control_frame_config[n],
-                                                                             text_area=self.text_area))
-
-            elif self.control_frame_config[n]['name'] in ['sheet_regex']:
-                self.root.control_frame_list.append(sheet_regex_ui_class.
-                                                    sheet_regex_ui_frame(root=self.root,
-                                                                         control_frame_config=self.control_frame_config[n],
-                                                                         text_area=self.text_area))
 
     def bring_to_front(self):
         self.root.lift()
